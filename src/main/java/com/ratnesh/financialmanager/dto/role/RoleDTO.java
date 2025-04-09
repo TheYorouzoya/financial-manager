@@ -1,4 +1,4 @@
-package com.ratnesh.financialmanager.dto;
+package com.ratnesh.financialmanager.dto.role;
 
 import java.util.List;
 import java.util.UUID;

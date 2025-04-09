@@ -61,7 +61,7 @@ public class FamilyService {
         Family family = familyRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Family not found."));
         User user = userRepository.getReferenceById(memberId);
-        
+        user.setFamily(family);
         family.getMembers().add(user);
         return familyMapper.toDTO(familyRepository.save(family));
     }

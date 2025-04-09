@@ -1,10 +1,10 @@
-package com.ratnesh.financialmanager.service;
+package com.ratnesh.financialmanager.security.userdetails;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,29 +16,25 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ratnesh.financialmanager.model.Privilege;
 import com.ratnesh.financialmanager.model.Role;
 import com.ratnesh.financialmanager.model.User;
-import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
 
 @Service("userDetailsService")
 @Transactional
 public class CustomUserDetailsService implements UserDetailsService {
     
+    @Autowired
     private UserRepository userRepository;
-    private RoleRepository roleRepository;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) {
-            return new org.springframework.security.core.userdetails.User(
-                " ",  " ", true, true, true, true, getAuthorities(Arrays.asList(
-                    roleRepository.findByName("ROLE_USER").orElse(null)
-                ))
-            );
+            throw new UsernameNotFoundException(username);
         }
 
-        return new org.springframework.security.core.userdetails.User(
-            user.getEmail(), user.getPassword(), user.isActive(), true, true, true, getAuthorities(user.getRoles())
+        return new CustomUserDetails(
+            user.getId(), user.getUsername(), user.getPassword(), getAuthorities(user.getRoles())
         );
     }
 

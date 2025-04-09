@@ -2,6 +2,7 @@ package com.ratnesh.financialmanager.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -16,6 +17,7 @@ import com.ratnesh.financialmanager.exceptions.DuplicateResourceException;
 import com.ratnesh.financialmanager.exceptions.InvalidUsernameException;
 import com.ratnesh.financialmanager.mapper.UserMapper;
 import com.ratnesh.financialmanager.model.User;
+import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final Pattern pattern = Pattern.compile("[A-Za-z0-9_]+");
@@ -51,6 +54,9 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setActive(true);
+        user.setRoles(Set.of(roleRepository.findByName("ROLE_USER").get()));
+
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponseDTO(savedUser);
     }

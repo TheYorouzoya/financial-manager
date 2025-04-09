@@ -3,6 +3,7 @@ package com.ratnesh.financialmanager.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
@@ -34,12 +35,6 @@ public class Family {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     
-    @ManyToMany
-    @JoinTable(
-        name = "family_members",
-        joinColumns = @JoinColumn(name = "family_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id"),
-        uniqueConstraints = @UniqueConstraint(columnNames = {"family_id", "user_id"})
-    )
+    @OneToMany(mappedBy = "family", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<User> members;
 }

@@ -1,7 +1,5 @@
 package com.ratnesh.financialmanager.config;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,19 +47,30 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         Set<Privilege> adminPrivileges = Set.of(readPrivilege, writePrivilege);
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege));
+        createRoleIfNotFound("ROLE_USER", Set.of(readPrivilege));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
-        User user = new User();
-        user.setFirstName("Admin");
-        user.setLastName("Test");
-        user.setPassword(passwordEncoder.encode("onepassword"));
-        user.setEmail("admin@financemanager.com");
-        user.setUsername("admin");
-        user.setRoles(Set.of(adminRole));
-        userRepository.save(user);
-
+        createAdminIfNotFound(adminRole);
         alreadySetup = true;
+    }
+
+    @Transactional
+    User createAdminIfNotFound(Role adminRole) {
+        User admin = userRepository.findByUsername("admin").orElse(null);
+        if (admin == null) {
+            User newAdmin = new User();
+            newAdmin.setFirstName("Admin");
+            newAdmin.setLastName("Test");
+            newAdmin.setPassword(passwordEncoder.encode("onepassword"));
+            newAdmin.setEmail("admin@financemanager.com");
+            newAdmin.setUsername("admin");
+            newAdmin.setRoles(Set.of(adminRole));
+            newAdmin.setActive(true);
+            userRepository.save(newAdmin);
+            return newAdmin;
+        }
+        admin.setActive(true);
+        return admin;
     }
 
 
@@ -78,7 +87,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
 
     @Transactional
-    Role createRoleIfNotFound(String name, Collection<Privilege> privileges) {
+    Role createRoleIfNotFound(String name, Set<Privilege> privileges) {
         Role role = roleRepository.findByName(name).orElse(null);
         if (role == null) {
             role = new Role();

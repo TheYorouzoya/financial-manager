@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-import com.ratnesh.financialmanager.model.Role;
+import com.ratnesh.financialmanager.dto.role.RoleResponseDTO;
 
 import lombok.Data;
 
@@ -22,6 +22,6 @@ public class UserDTO {
     private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Set<Role> roles;
+    private Set<RoleResponseDTO> roles;
     private UUID familyId; 
 }

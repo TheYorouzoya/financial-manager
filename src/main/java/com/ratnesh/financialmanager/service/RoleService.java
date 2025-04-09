@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ratnesh.financialmanager.dto.RoleDTO;
+import com.ratnesh.financialmanager.dto.role.RoleDTO;
 import com.ratnesh.financialmanager.mapper.RoleMapper;
 import com.ratnesh.financialmanager.model.Role;
 import com.ratnesh.financialmanager.model.User;

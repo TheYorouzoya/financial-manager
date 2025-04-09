@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ratnesh.financialmanager.dto.RoleDTO;
+import com.ratnesh.financialmanager.dto.role.RoleDTO;
 import com.ratnesh.financialmanager.service.RoleService;
 
 import lombok.RequiredArgsConstructor;

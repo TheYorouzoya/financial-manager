@@ -24,7 +24,7 @@ public class UserController {
     
   private final UserService userService;
     
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -44,7 +44,7 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN') or (#id == principal.id)")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
         return userService.updateUser(id, userDTO)

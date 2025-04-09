@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotEmpty;
 public class FamilyDTO {
     private UUID id;
 
-    @NotEmpty(message = "Family name is required.")
+@NotEmpty(message = "Family name is required.")
     private String name;
     private String description;
     private Set<UUID> members;
