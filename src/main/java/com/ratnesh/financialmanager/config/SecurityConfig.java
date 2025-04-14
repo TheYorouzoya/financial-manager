@@ -1,9 +1,14 @@
 package com.ratnesh.financialmanager.config;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +72,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/oauth2/**", "/api/v1/auth/**").permitAll()
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
+                .requestMatchers("/oauth2/**", "/api/v1/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -99,24 +105,6 @@ public class SecurityConfig {
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
 
         return new NimbusJwtEncoder(jwks);
-    }
-
-    @Bean
-    public RSAPublicKey publicKey() throws Exception {
-        ClassPathResource resource = new ClassPathResource("keys/public_key.pem");
-        try (InputStream is = resource.getInputStream()) {
-            String key = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            return (RSAPublicKey) getPublicKeyFromPEM(key);
-        }
-    }
-
-    @Bean
-    public RSAPrivateKey privateKey() throws Exception {
-        ClassPathResource resource = new ClassPathResource("keys/private_key.pem");
-        try (InputStream is = resource.getInputStream()) {
-            String key = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            return (RSAPrivateKey) getPrivateKeyFromPEM(key);
-        }
     }
 
     @Bean
