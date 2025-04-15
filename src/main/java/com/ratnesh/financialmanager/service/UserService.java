@@ -6,6 +6,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final Pattern pattern = Pattern.compile("[A-Za-z0-9_]+");
     
+    @Cacheable(value = "userCache")
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream().map(userMapper::toDTO).toList();
@@ -69,6 +73,7 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
     
+    @CachePut(value = "userCache", key = "#id")
     @Transactional
     public Optional<UserResponseDTO> updateUser(UUID id, UserDTO userDTO) {
         return userRepository.findById(id).map(existingUser -> {
@@ -79,6 +84,7 @@ public class UserService {
         });
     }
     
+    @CacheEvict(value = "userCache", key = "#id")
     @Transactional
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
