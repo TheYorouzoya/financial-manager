@@ -52,4 +52,9 @@ public class RefreshTokenService {
     public RefreshToken getTokenById(UUID id) {
         return refreshTokenRepository.findById(id).orElse(null);
     }
+
+    public void deleteAllByUserId(UUID fromString) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByUserId'");
+    }
 }

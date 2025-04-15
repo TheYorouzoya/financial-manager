@@ -16,6 +16,7 @@ import com.ratnesh.financialmanager.model.Role;
 import com.ratnesh.financialmanager.model.User;
 import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
+import com.ratnesh.financialmanager.config.CacheConfig;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,13 @@ public class RoleService {
 
     private final UserRepository userRepository;
 
-    @Cacheable(value = "rolesCache")
+    @Cacheable(value = CacheConfig.ROLE_CACHE_NAME)
     public List<RoleDTO> getAllRoles() {
         List<Role> roles = roleRepository.findAll();
         return roles.stream().map(roleMapper::toDTO).toList();
     }
 
-    @Cacheable(value = "rolesCache", key = "#id")
+    @Cacheable(value = CacheConfig.ROLE_CACHE_NAME, key = "#id")
     public Optional<RoleDTO> getRoleById(UUID id) {
         return roleRepository.findById(id).map(roleMapper::toDTO);
     }
@@ -46,7 +47,7 @@ public class RoleService {
         return roleMapper.toDTO(savedRole);
     }
 
-    @CachePut(value = "rolesCache", key = "#id")
+    @CachePut(value = CacheConfig.ROLE_CACHE_NAME, key = "#id")
     @Transactional
     public Optional<RoleDTO> updateRole(UUID id, RoleDTO roleDTO) {
         return roleRepository.findById(id).map(existingRole -> {
@@ -56,7 +57,7 @@ public class RoleService {
         });
     }
 
-    @CacheEvict(value = "rolesCache", key = "#id")
+    @CacheEvict(value = CacheConfig.ROLE_CACHE_NAME, key = "#id")
     @Transactional
     public void deleteRole(UUID id) {
         roleRepository.deleteById(id);

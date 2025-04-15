@@ -22,6 +22,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Configuration
 public class CacheConfig {
 
+    public final static String USER_CACHE_NAME = "userCache";
+    public final static String ROLE_CACHE_NAME = "rolesCache";
+    public final static String PRIVILEGE_CACHE_NAME = "privilegeCache";
+    public final static String TOKEN_CACHE_NAME = "tokenCache";
+
     @Bean
     public ObjectMapper objectMapper() {
         return JsonMapper.builder()
@@ -42,10 +47,10 @@ public class CacheConfig {
             );
         
         Map<String, RedisCacheConfiguration> configMap = new HashMap<>();
-        configMap.put("userCache", defaultConfig.entryTtl(Duration.ofMinutes(5)));
-        configMap.put("rolesCache", defaultConfig.entryTtl(Duration.ofHours(1)));
-        configMap.put("priviligesCache", defaultConfig.entryTtl(Duration.ofHours(1)));
-        configMap.put("tokenCache", defaultConfig.entryTtl(Duration.ofMinutes(15)));
+        configMap.put(USER_CACHE_NAME, defaultConfig.entryTtl(Duration.ofMinutes(5)));
+        configMap.put(ROLE_CACHE_NAME, defaultConfig.entryTtl(Duration.ofHours(1)));
+        configMap.put(PRIVILEGE_CACHE_NAME, defaultConfig.entryTtl(Duration.ofHours(1)));
+        configMap.put(TOKEN_CACHE_NAME, defaultConfig.entryTtl(Duration.ofMinutes(15)));
 
         return RedisCacheManager.builder(connectionFactory)
             .cacheDefaults(defaultConfig)

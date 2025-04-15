@@ -3,6 +3,7 @@ package com.ratnesh.financialmanager.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -50,8 +51,27 @@ public class SecurityConfig {
 
     private final RSAKeyConfig keys;
 
+    private static final String[] PUBLIC_ENDPOINTS = {
+        "/api/v1/auth/login",
+        "/api/v1/auth/refresh",
+        "/oauth2/**"
+    };
+
     @Bean
-    public SecurityFilterChain oAuthSecurityFilterChain(
+    @Order(1)
+    public SecurityFilterChain publicEndpoints(HttpSecurity http) throws Exception {
+        
+        http
+            .securityMatcher(PUBLIC_ENDPOINTS)
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain protectedEndpoints(
         HttpSecurity http, 
         CustomOAuth2UserService customOAuth2UserService,
         OAuth2AutheticationSuccessHandler successHandler
@@ -62,7 +82,6 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
-                .requestMatchers("/oauth2/**", "/api/v1/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

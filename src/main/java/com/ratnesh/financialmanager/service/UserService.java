@@ -22,6 +22,7 @@ import com.ratnesh.financialmanager.mapper.UserMapper;
 import com.ratnesh.financialmanager.model.User;
 import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
+import com.ratnesh.financialmanager.config.CacheConfig;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +36,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final Pattern pattern = Pattern.compile("[A-Za-z0-9_]+");
     
-    @Cacheable(value = "userCache")
+    @Cacheable(value = CacheConfig.USER_CACHE_NAME)
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream().map(userMapper::toDTO).toList();
@@ -73,7 +74,7 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
     
-    @CachePut(value = "userCache", key = "#id")
+    @CachePut(value = CacheConfig.USER_CACHE_NAME, key = "#id")
     @Transactional
     public Optional<UserResponseDTO> updateUser(UUID id, UserDTO userDTO) {
         return userRepository.findById(id).map(existingUser -> {
@@ -84,7 +85,7 @@ public class UserService {
         });
     }
     
-    @CacheEvict(value = "userCache", key = "#id")
+    @CacheEvict(value = CacheConfig.USER_CACHE_NAME, key = "#id")
     @Transactional
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
