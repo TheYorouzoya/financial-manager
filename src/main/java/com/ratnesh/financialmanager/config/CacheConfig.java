@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 
@@ -26,6 +28,12 @@ public class CacheConfig {
     public final static String ROLE_CACHE_NAME = "rolesCache";
     public final static String PRIVILEGE_CACHE_NAME = "privilegeCache";
     public final static String TOKEN_CACHE_NAME = "tokenCache";
+
+
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory();
+    }
 
     @Bean
     public ObjectMapper objectMapper() {
@@ -57,4 +65,12 @@ public class CacheConfig {
             .withInitialCacheConfigurations(configMap)
             .build();
     }
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        return template;
+    }
+
 }

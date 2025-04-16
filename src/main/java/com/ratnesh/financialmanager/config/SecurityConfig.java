@@ -3,7 +3,6 @@ package com.ratnesh.financialmanager.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -21,9 +20,11 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -31,12 +32,13 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-
+import com.ratnesh.financialmanager.security.jwt.JwtBlacklistFilter;
 import com.ratnesh.financialmanager.security.jwt.RSAKeyConfig;
 import com.ratnesh.financialmanager.security.oauth2.CustomOAuth2UserService;
 import com.ratnesh.financialmanager.security.oauth2.OAuth2AutheticationSuccessHandler;
 import com.ratnesh.financialmanager.security.userdetails.CustomUserDetailsService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 
@@ -46,7 +48,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
     private final CustomUserDetailsService customUserDetailsService;
 
     private final RSAKeyConfig keys;
@@ -58,37 +59,28 @@ public class SecurityConfig {
     };
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain publicEndpoints(HttpSecurity http) throws Exception {
-        
-        http
-            .securityMatcher(PUBLIC_ENDPOINTS)
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
     public SecurityFilterChain protectedEndpoints(
         HttpSecurity http, 
         CustomOAuth2UserService customOAuth2UserService,
-        OAuth2AutheticationSuccessHandler successHandler
+        OAuth2AutheticationSuccessHandler successHandler,
+        JwtBlacklistFilter jwtBlacklistFilter
     ) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
+                .authenticationEntryPoint(customAuthenticationEntryPoint())
                 .jwt(jwt -> jwt
                     .decoder(jwtDecoder())
                     .jwtAuthenticationConverter(jwtAuthenticationConverter()))
             )
+            .addFilterBefore(jwtBlacklistFilter, BearerTokenAuthenticationFilter.class)
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(info -> info
                     .userService(customOAuth2UserService))
@@ -151,5 +143,18 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            String jsonPayload = String.format("{\"error\": \"%s\", \"message\": \"%s\"}",
+                      "Authentication Failed", authException.getMessage());
+            
+            response.getWriter().write(jsonPayload);
+        };
     }
 }

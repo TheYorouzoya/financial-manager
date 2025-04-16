@@ -14,6 +14,7 @@ import com.ratnesh.financialmanager.model.User;
 import com.ratnesh.financialmanager.repository.RefreshTokenRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -53,8 +54,8 @@ public class RefreshTokenService {
         return refreshTokenRepository.findById(id).orElse(null);
     }
 
-    public void deleteAllByUserId(UUID fromString) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAllByUserId'");
+    @Transactional
+    public void deleteAllUserRefreshTokens(UUID userId) {
+        refreshTokenRepository.deleteAllByUserId(userId);
     }
 }
