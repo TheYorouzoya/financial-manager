@@ -27,13 +27,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ratnesh.financialmanager.WithMockCustomUser;
 import com.ratnesh.financialmanager.dto.user.UserDTO;
 import com.ratnesh.financialmanager.dto.user.UserRegistrationDTO;
 import com.ratnesh.financialmanager.dto.user.UserResponseDTO;
 import com.ratnesh.financialmanager.security.jwt.JwtService;
 import com.ratnesh.financialmanager.security.jwt.TokenBlacklistService;
 import com.ratnesh.financialmanager.service.UserService;
+import com.ratnesh.financialmanager.testConfig.WithMockCustomUser;
 
 
 @WebMvcTest(UserController.class)
