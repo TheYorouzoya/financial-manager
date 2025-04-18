@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class UserRegistrationDTO {
     @NotBlank(message = "Username is required.")
     @Size(min = 4, max = 50, message = "Username must be between 2 and 50 characters.")
@@ -25,4 +27,11 @@ public class UserRegistrationDTO {
     private String lastName;
     private String phoneNumber;
     private String profilePictureURL;
+
+    public UserRegistrationDTO(String email, String firstName, String lastName) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
 }

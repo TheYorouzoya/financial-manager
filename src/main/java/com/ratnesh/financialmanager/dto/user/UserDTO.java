@@ -24,4 +24,11 @@ public class UserDTO {
     private LocalDateTime updatedAt;
     private Set<RoleResponseDTO> roles;
     private UUID familyId; 
+
+    public UserDTO(UUID id, String email, String firstName, String lastName) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

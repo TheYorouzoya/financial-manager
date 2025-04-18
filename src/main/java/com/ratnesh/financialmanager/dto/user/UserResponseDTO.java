@@ -11,4 +11,10 @@ public class UserResponseDTO {
     private String lastName;
     private String phoneNumber;
     private String profilePictureUrl;
+
+    public UserResponseDTO(String email, String firstName, String lastName) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }

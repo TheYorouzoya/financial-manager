@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ratnesh.financialmanager.dto.LoginRequest;
 import com.ratnesh.financialmanager.dto.TokenRefreshRequest;
 import com.ratnesh.financialmanager.dto.TokenResponse;
+import com.ratnesh.financialmanager.dto.user.UserRegistrationDTO;
+import com.ratnesh.financialmanager.dto.user.UserResponseDTO;
 import com.ratnesh.financialmanager.exceptions.RefreshTokenException;
 import com.ratnesh.financialmanager.model.RefreshToken;
 import com.ratnesh.financialmanager.model.User;
@@ -27,7 +29,9 @@ import com.ratnesh.financialmanager.security.jwt.JwtService;
 import com.ratnesh.financialmanager.security.jwt.TokenBlacklistService;
 import com.ratnesh.financialmanager.security.userdetails.CustomUserDetails;
 import com.ratnesh.financialmanager.service.RefreshTokenService;
+import com.ratnesh.financialmanager.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -39,6 +43,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final TokenBlacklistService blacklistService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest) {
@@ -94,5 +99,11 @@ public class AuthController {
         refreshTokenService.deleteAllUserRefreshTokens(UUID.fromString(userId));
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRegistrationDTO userDTO) {
+        UserResponseDTO createdUser = userService.createUser(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 }

@@ -62,6 +62,10 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
 }
 
+test {
+    jvmArgs "-javaagent:${configurations.testRuntimeClasspath.find { it.name.contains('mockito-core') }}", '-Xshare:off'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
