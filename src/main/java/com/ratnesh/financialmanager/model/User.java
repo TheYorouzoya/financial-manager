@@ -65,7 +65,7 @@ public class User {
     @JoinColumn(name = "family_id")
     private Family family;
 
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         return getGrantedAuthorities(getPrivileges(this.roles));
     }
 

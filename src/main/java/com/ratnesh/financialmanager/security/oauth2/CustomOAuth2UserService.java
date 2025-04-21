@@ -29,10 +29,12 @@ import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomOAuth2UserService.class);
@@ -40,15 +42,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-
-
-    public CustomOAuth2UserService(UserRepository userRepository,
-                                   PasswordEncoder passwordEncoder,
-                                   RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-    }
 
     @Override
     @Transactional

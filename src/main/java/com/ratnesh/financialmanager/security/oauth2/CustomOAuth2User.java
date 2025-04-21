@@ -12,9 +12,9 @@ public class CustomOAuth2User implements OAuth2User {
     private final Map<String, Object> attributes;
     private final String name;
     private final UUID id;
-    private final Collection<? extends GrantedAuthority> authorities;
+    private final Collection<GrantedAuthority> authorities;
 
-    public CustomOAuth2User(String name, UUID id, Map<String, Object> attributes, Collection<? extends GrantedAuthority> authorities) {
+    public CustomOAuth2User(String name, UUID id, Map<String, Object> attributes, Collection<GrantedAuthority> authorities) {
         this.id = id;
         this.name = name;
         this.attributes = attributes;
@@ -32,7 +32,7 @@ public class CustomOAuth2User implements OAuth2User {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         return authorities;
     }
 

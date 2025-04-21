@@ -28,7 +28,7 @@ public class JwtService {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
-    public String generateToken(String subject, UUID id, Collection<? extends GrantedAuthority> authorities) {
+    public String generateToken(String subject, UUID id, Collection<GrantedAuthority> authorities) {
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
