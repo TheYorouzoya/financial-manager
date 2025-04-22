@@ -27,6 +27,7 @@ import com.ratnesh.financialmanager.model.User;
 import com.ratnesh.financialmanager.model.Role;
 import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -109,7 +110,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         user.setUsername(email);
         user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
 
-        Role userRole = roleRepository.findByName("ROLE_USER")
+        Role userRole = roleRepository.findByName(SecurityConstants.ROLE_USER)
             .orElseThrow(() -> new RuntimeException("Default role not found"));
         user.setRoles(Set.of(userRole));
 

@@ -1,11 +1,14 @@
 package com.ratnesh.financialmanager.config;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.lang.NonNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +19,11 @@ import com.ratnesh.financialmanager.model.User;
 import com.ratnesh.financialmanager.repository.PrivilegeRepository;
 import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 
 
 @Component
-public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
+public class seedRolesAndPrivilegeData implements ApplicationRunner {
 
     boolean alreadySetup = false;
 
@@ -35,22 +39,33 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Override
-    @Transactional
-    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
+    @Value("$application.mode")
+    private String mode;
 
+    @Override
+    public void run(ApplicationArguments args) {
+
+        alreadySetup = (roleRepository.count() > 0);
         if (alreadySetup)
             return;
 
-        Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
+        Map<String, List<String>> rolePrivilegeMap = SecurityConstants.getRolePrivilegeMapping();
 
-        Set<Privilege> adminPrivileges = Set.of(readPrivilege, writePrivilege);
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_USER", Set.of(readPrivilege));
+        for(Map.Entry<String, List<String>> entry : rolePrivilegeMap.entrySet()) {
+            String roleName = entry.getKey();
+            List<String> privilegeNames = entry.getValue();
 
-        Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
-        createAdminIfNotFound(adminRole);
+            Set<Privilege> privileges = privilegeNames.stream()
+                    .map(this::createPrivilegeIfNotFound)
+                    .collect(Collectors.toSet());
+            
+            createRoleIfNotFound(roleName, privileges);
+        }
+
+        if (mode != null && mode.equals("test")) {
+            createAdminIfNotFound(roleRepository.findByName(SecurityConstants.ROLE_SITE_ADMIN).get());
+        }
+
         alreadySetup = true;
     }
 

@@ -31,6 +31,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.security.jwt.JwtBlacklistFilter;
 import com.ratnesh.financialmanager.security.jwt.RSAKeyConfig;
 import com.ratnesh.financialmanager.security.oauth2.CustomOAuth2UserService;
@@ -71,7 +72,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers("/actuator/**").hasRole("ADMIN")
+                .requestMatchers("/actuator/**").hasRole(SecurityConstants.ROLE_SITE_ADMIN)
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

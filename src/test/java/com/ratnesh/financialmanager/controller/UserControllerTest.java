@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ratnesh.financialmanager.dto.user.UserDTO;
 import com.ratnesh.financialmanager.dto.user.UserRegistrationDTO;
 import com.ratnesh.financialmanager.dto.user.UserResponseDTO;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.security.jwt.JwtService;
 import com.ratnesh.financialmanager.security.jwt.TokenBlacklistService;
 import com.ratnesh.financialmanager.service.UserService;
@@ -100,7 +101,7 @@ class UserControllerTest {
     class GetAllUsersTests {
 
         @Test
-        @WithMockUser(roles = "ADMIN")
+        @WithMockUser(roles = SecurityConstants.ROLE_SITE_ADMIN)
         void getAllUsers_AdminRole_ShouldReturnOkAndListOfUsers() throws Exception {
             List<UserDTO> users = Collections.singletonList(userDTO);
             when(userService.getAllUsers()).thenReturn(users);
@@ -131,7 +132,7 @@ class UserControllerTest {
     @Nested
     class GetUserByIdTests {
         @Test
-        @WithMockCustomUser(roles = "ADMIN", id = PRINCIPAL_UUID_STRING)
+        @WithMockCustomUser(roles = SecurityConstants.ROLE_SITE_ADMIN, id = PRINCIPAL_UUID_STRING)
         void getUserById_AdminRole_ExistingUser_ShouldReturnOkAndUser() throws Exception {
             when(userService.getUserById(userId)).thenReturn(Optional.of(userDTO));
 
@@ -147,7 +148,7 @@ class UserControllerTest {
         }
 
         @Test
-        @WithMockUser(roles = "ADMIN")
+        @WithMockUser(roles = SecurityConstants.ROLE_SITE_ADMIN)
         void getUserById_AdminRole_NonExistingUser_ShouldReturnNotFound() throws Exception {
             UUID missingId = UUID.randomUUID();
             when(userService.getUserById(missingId)).thenReturn(Optional.empty());
@@ -174,7 +175,7 @@ class UserControllerTest {
     @Nested
     class UpdateUserTests {
         @Test
-        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = "ADMIN")
+        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = SecurityConstants.ROLE_SITE_ADMIN)
         void updateUser_AdminRole_ExistingUser_ShouldReturnOkAndUpdatedUser() throws Exception {
             String updatedEmail = "updated.email@example.com";
             String updatedFirstName = "Updated";
@@ -199,7 +200,7 @@ class UserControllerTest {
         }
     
         @Test
-        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = "ADMIN")
+        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = SecurityConstants.ROLE_SITE_ADMIN)
         void updateUser_AdminRole_NonExistingUser_ShouldReturnNotFound() throws Exception {
             UserDTO updatedUserDTO = new UserDTO(UUID.randomUUID(), "udpated.email@example.com", "Updated", "Name");
             when(userService.updateUser(eq(userId), any(UserDTO.class))).thenReturn(Optional.empty());
@@ -253,7 +254,7 @@ class UserControllerTest {
     @Nested
     class DeleteUserTests {
         @Test
-        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = "ADMIN")
+        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = SecurityConstants.ROLE_SITE_ADMIN)
         void deleteUser_AdminRole_ExistingUser_ShouldReturnNoContent() throws Exception {
             doNothing().when(userService).deleteUser(userId);
     
@@ -265,7 +266,7 @@ class UserControllerTest {
         }
     
         @Test
-        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = "ADMIN")
+        @WithMockCustomUser(id = PRINCIPAL_UUID_STRING, roles = SecurityConstants.ROLE_SITE_ADMIN)
         void deleteUser_AdminRole_NonExistingUser_ShouldReturnNoContent() throws Exception {
             UUID randomUUID = UUID.randomUUID();
             doNothing().when(userService).deleteUser(randomUUID);
