@@ -24,18 +24,18 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping(SecurityConstants.USERS_URL)
 public class UserController {
     
   private final UserService userService;
     
-    @PreAuthorize("hasRole('" + SecurityConstants.ROLE_SITE_ADMIN + "')")
+    @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS)")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
     
-    @PreAuthorize("hasRole('" + SecurityConstants.ROLE_SITE_ADMIN + "')")
+    @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS)")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         return userService.getUserById(id)
@@ -43,7 +43,7 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @PreAuthorize("hasRole('" + SecurityConstants.ROLE_SITE_ADMIN + "') or (#id == principal.id)")
+    @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS) or (#id == principal.id)")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
         return userService.updateUser(id, userDTO)
@@ -51,7 +51,7 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @PreAuthorize("hasRole('" + SecurityConstants.ROLE_SITE_ADMIN + "')")
+    @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);

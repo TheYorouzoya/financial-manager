@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ratnesh.financialmanager.dto.DocumentDTO;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.service.DocumentService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping(SecurityConstants.DOCUMENTS_URL)
 @RequiredArgsConstructor
 public class DocumentController {
     

@@ -1,6 +1,7 @@
 package com.ratnesh.financialmanager.controller;
 
 import com.ratnesh.financialmanager.dto.AssetDTO;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.service.AssetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/assets")
+@RequestMapping(SecurityConstants.ASSETS_URL)
 @RequiredArgsConstructor
 public class AssetController {
     

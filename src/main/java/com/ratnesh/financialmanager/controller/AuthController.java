@@ -25,6 +25,7 @@ import com.ratnesh.financialmanager.dto.user.UserResponseDTO;
 import com.ratnesh.financialmanager.exceptions.RefreshTokenException;
 import com.ratnesh.financialmanager.model.RefreshToken;
 import com.ratnesh.financialmanager.model.User;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.security.jwt.JwtService;
 import com.ratnesh.financialmanager.security.jwt.TokenBlacklistService;
 import com.ratnesh.financialmanager.security.userdetails.CustomUserDetails;
@@ -35,7 +36,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping(SecurityConstants.AUTH_URL)
 @RequiredArgsConstructor
 public class AuthController {
     

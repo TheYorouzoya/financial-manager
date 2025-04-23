@@ -128,8 +128,11 @@ public class SecurityConfig {
 
     @Bean
     static RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.withDefaultRolePrefix()
-            .role("ADMIN").implies("USER")
+        return RoleHierarchyImpl.withRolePrefix("")
+            .role(SecurityConstants.ROLE_SITE_ADMIN).implies(SecurityConstants.ROLE_FAMILY_HEAD)
+            .role(SecurityConstants.ROLE_FAMILY_HEAD).implies(SecurityConstants.ROLE_FAMILY_ACCOUNTANT)
+            .role(SecurityConstants.ROLE_FAMILY_ACCOUNTANT).implies(SecurityConstants.ROLE_FAMILY_MEMBER)
+            .role(SecurityConstants.ROLE_FAMILY_MEMBER).implies(SecurityConstants.ROLE_USER)
             .build();
     }
 

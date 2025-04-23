@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+@Component("Roles")
 public final class SecurityConstants {
     
     // --- Role Definitions ---
@@ -62,8 +65,6 @@ public final class SecurityConstants {
     // User Profile Privilege
     public static final String MANAGE_OWN_PROFILE = "MANAGE_OWN_PROFILE";
 
-    private SecurityConstants() {}
-
     private static final Map<String, List<String>> ROLE_PRIVILEGE_MAPPING;
 
     static {
@@ -80,23 +81,17 @@ public final class SecurityConstants {
 
         // FAMILY_HEAD: Full control within the family
         rolePrivilegeMap.put(ROLE_FAMILY_HEAD, Arrays.asList(
-            // family assets
             FAMILY_CREATE_ASSET, FAMILY_READ_ASSET, FAMILY_UPDATE_ASSET, FAMILY_DELETE_ASSET,
-            // family accoutns
             FAMILY_CREATE_ACCOUNT, FAMILY_READ_ACCOUNT, FAMILY_UPDATE_ACCOUNT, FAMILY_DELETE_ACCOUNT,
-            // family transactions
             FAMILY_CREATE_TRANSACTION, FAMILY_READ_TRANSACTION, FAMILY_UPDATE_TRANSACTION, FAMILY_DELETE_TRANSACTION,
-            // family documents
             FAMILY_CREATE_DOCUMENT, FAMILY_READ_DOCUMENT, FAMILY_UPDATE_DOCUMENT, FAMILY_DELETE_DOCUMENT,
-            // family members
             FAMILY_ADD_MEMBER, FAMILY_READ_MEMBER, FAMILY_UPDATE_MEMBER_ROLE, FAMILY_REMOVE_MEMBER,
-            // family alerts
             FAMILY_READ_ALERT, FAMILY_CONFIGURE_ALERT,
             
             MANAGE_OWN_PROFILE
         ));
 
-        // FAMILY_ACCOUNTANT: broad access to family financial data. partial management access
+        // FAMILY_ACCOUNTANT: broad access to family financial data. partial asset management access
         rolePrivilegeMap.put(ROLE_FAMILY_ACCOUNTANT, Arrays.asList(
             FAMILY_CREATE_ASSET, FAMILY_READ_ASSET, FAMILY_UPDATE_ASSET, FAMILY_DELETE_ASSET,
             FAMILY_CREATE_ACCOUNT, FAMILY_READ_ACCOUNT, FAMILY_UPDATE_ACCOUNT, FAMILY_DELETE_ACCOUNT,
@@ -136,4 +131,22 @@ public final class SecurityConstants {
     public static Map<String, List<String>> getRolePrivilegeMapping() {
         return ROLE_PRIVILEGE_MAPPING;
     }
+
+    // API URLs
+    public static final String BASE_API_URL = "/api/v1";
+    public static final String ACCOUNTS_URL = BASE_API_URL + "/accounts";
+    public static final String ALERTS_URL = BASE_API_URL + "/alerts";
+    public static final String ASSETS_URL = BASE_API_URL + "/assets";
+    public static final String AUTH_URL = BASE_API_URL + "/auth";
+    public static final String DOCUMENTS_URL = BASE_API_URL + "/documents";
+    public static final String FAMILIES_URL = BASE_API_URL + "/families";
+    public static final String PRIVILEGES_URL = BASE_API_URL + "/privileges";
+    public static final String ROLES_URL = BASE_API_URL + "/roles";
+    public static final String TRANSACTIONS_URL = BASE_API_URL + "/transactions";
+    public static final String USERS_URL = BASE_API_URL + "/users";
+
+    // Private Constructor
+    private SecurityConstants() {}
+
+
 }

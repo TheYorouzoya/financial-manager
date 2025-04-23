@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ratnesh.financialmanager.dto.AccountDTO;
 import com.ratnesh.financialmanager.service.AccountService;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping(SecurityConstants.ACCOUNTS_URL)
 @RequiredArgsConstructor
 public class AccountController {
     

@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ratnesh.financialmanager.dto.AlertDTO;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.service.AlertService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/alerts")
+@RequestMapping(SecurityConstants.ALERTS_URL)
 @RequiredArgsConstructor
 public class AlertController {
     

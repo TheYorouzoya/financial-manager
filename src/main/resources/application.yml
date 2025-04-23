@@ -1,7 +1,6 @@
 spring:
   application:
     name: financialmanager
-    mode: test
 
   cache:
     type: redis

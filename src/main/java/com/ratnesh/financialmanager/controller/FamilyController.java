@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ratnesh.financialmanager.dto.family.AddMemberRequestDTO;
 import com.ratnesh.financialmanager.dto.family.FamilyDTO;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.service.FamilyService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/families")
+@RequestMapping(SecurityConstants.FAMILIES_URL)
 @RequiredArgsConstructor
 public class FamilyController {
     

@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,9 +38,6 @@ public class seedRolesAndPrivilegeData implements ApplicationRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("$application.mode")
-    private String mode;
-
     @Override
     public void run(ApplicationArguments args) {
 
@@ -62,9 +58,7 @@ public class seedRolesAndPrivilegeData implements ApplicationRunner {
             createRoleIfNotFound(roleName, privileges);
         }
 
-        if (mode != null && mode.equals("test")) {
-            createAdminIfNotFound(roleRepository.findByName(SecurityConstants.ROLE_SITE_ADMIN).get());
-        }
+        createAdminIfNotFound(roleRepository.findByName(SecurityConstants.ROLE_SITE_ADMIN).get());
 
         alreadySetup = true;
     }
