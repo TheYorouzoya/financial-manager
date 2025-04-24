@@ -28,7 +28,7 @@ public class JwtService {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
-    public String generateToken(String subject, UUID id, Collection<GrantedAuthority> authorities) {
+    public String generateToken(String subject, UUID userId, Collection<GrantedAuthority> authorities) {
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -37,7 +37,7 @@ public class JwtService {
                 .expiresAt(now.plus(Duration.ofMillis(expiration)))
                 .subject(subject)
                 .id(UUID.randomUUID().toString())
-                .claim("id", id)
+                .claim("userId", userId)
                 .claim("scope", authorities.stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))

@@ -29,7 +29,7 @@ public class UserController {
     
   private final UserService userService;
     
-    @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS)")
+    @PreAuthorize("hasAuthority(@Roles.ROLE_SITE_ADMIN)")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());

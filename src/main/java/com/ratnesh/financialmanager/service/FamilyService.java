@@ -34,6 +34,10 @@ public class FamilyService {
     public Optional<FamilyDTO> getFamilyById(UUID id) {
         return familyRepository.findById(id).map(familyMapper::toDTO);
     }
+
+    public Optional<FamilyDTO> getFamilyByUserId(UUID userId) {
+        return familyRepository.findByMembers_Id(userId).map(familyMapper::toDTO);
+    }
     
     @Transactional
     public FamilyDTO createFamily(FamilyDTO familyDTO) {

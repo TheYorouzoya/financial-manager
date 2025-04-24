@@ -51,15 +51,15 @@ spring:
 
 logging:
   level:
-    # org:
-    #   springframework: ${LOG_LEVEL_SPRING:INFO}
-    #   springframework.security: DEBUG
-    #   hibernate:
-    #     SQL: ${LOG_LEVEL_HIBERNATE_SQL:DEBUG}
-    #     type:
-    #       descriptor:
-    #         sql:
-    #           BasicBinder: ${LOG_LEVEL_HIBERNATE_PARAMS:TRACE}
+    org:
+      springframework: ${LOG_LEVEL_SPRING:INFO}
+      springframework.security: DEBUG
+      hibernate:
+        SQL: ${LOG_LEVEL_HIBERNATE_SQL:DEBUG}
+        type:
+          descriptor:
+            sql:
+              BasicBinder: ${LOG_LEVEL_HIBERNATE_PARAMS:TRACE}
 
     com:
       familyfinance: ${LOG_LEVEL_APP:DEBUG}
