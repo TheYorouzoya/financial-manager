@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -63,7 +65,12 @@ public class User {
     
     @ManyToOne
     @JoinColumn(name = "family_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Family family;
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
 
     public Collection<GrantedAuthority> getAuthorities() {
         return getGrantedAuthorities(getPrivileges(this.roles));

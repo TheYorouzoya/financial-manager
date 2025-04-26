@@ -18,10 +18,13 @@ import com.ratnesh.financialmanager.dto.user.UserRegistrationDTO;
 import com.ratnesh.financialmanager.dto.user.UserResponseDTO;
 import com.ratnesh.financialmanager.exceptions.DuplicateResourceException;
 import com.ratnesh.financialmanager.exceptions.InvalidUsernameException;
+import com.ratnesh.financialmanager.exceptions.ResourceNotFoundException;
 import com.ratnesh.financialmanager.mapper.UserMapper;
+import com.ratnesh.financialmanager.model.Role;
 import com.ratnesh.financialmanager.model.User;
 import com.ratnesh.financialmanager.repository.RoleRepository;
 import com.ratnesh.financialmanager.repository.UserRepository;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.config.CacheConfig;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +45,7 @@ public class UserService {
         return users.stream().map(userMapper::toDTO).toList();
     }
 
+    @CacheEvict(value = CacheConfig.USER_CACHE_NAME, allEntries = true)
     public UserResponseDTO createUser(UserRegistrationDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         String username = userDTO.getUsername();
@@ -60,7 +64,7 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setActive(true);
-        user.setRoles(Set.of(roleRepository.findByName("ROLE_USER").get()));
+        user.setRoles(Set.of(roleRepository.findByName(SecurityConstants.ROLE_USER).get()));
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponseDTO(savedUser);
@@ -76,13 +80,24 @@ public class UserService {
     
     @CachePut(value = CacheConfig.USER_CACHE_NAME, key = "#id")
     @Transactional
-    public Optional<UserResponseDTO> updateUser(UUID id, UserDTO userDTO) {
+    public Optional<UserResponseDTO> updateUser(UUID id, UserRegistrationDTO userDTO) {
         return userRepository.findById(id).map(existingUser -> {
-            User updatedUser = userMapper.toEntity(userDTO);
-            updatedUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            updatedUser = userRepository.save(updatedUser);
-            return userMapper.toUserResponseDTO(updatedUser);
+            existingUser = userMapper.updateUserFromDTO(userDTO, existingUser);
+            existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            return userMapper.toUserResponseDTO(userRepository.save(existingUser));
         });
+    }
+
+    @Transactional
+    public void addRoleToUser(UUID userId, String roleName) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Role role = roleRepository.findByName(roleName)
+            .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
+        user.getRoles().add(role);
+        userRepository.save(user);
     }
     
     @CacheEvict(value = CacheConfig.USER_CACHE_NAME, key = "#id")

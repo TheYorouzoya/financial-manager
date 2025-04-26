@@ -43,6 +43,7 @@ import com.ratnesh.financialmanager.exceptions.RefreshTokenException;
 import com.ratnesh.financialmanager.model.RefreshToken;
 import com.ratnesh.financialmanager.model.Role;
 import com.ratnesh.financialmanager.model.User;
+import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.security.jwt.JwtService;
 import com.ratnesh.financialmanager.security.jwt.TokenBlacklistService;
 import com.ratnesh.financialmanager.security.userdetails.CustomUserDetails;
@@ -289,7 +290,7 @@ public class AuthControllerTest {
     class LogoutTests {
 
         @Test
-        @WithMockCustomUser(roles = "USER")
+        @WithMockCustomUser(roles = SecurityConstants.USER)
         void logout_ValidJwt_ShouldBlackListTokenAndRevokeRefreshToken() throws Exception {
             JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt);
 

@@ -51,25 +51,21 @@ public class AuthController {
         if (loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
             return ResponseEntity.badRequest().build();
         }
-        
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    loginRequest.getUsername(), 
-                    loginRequest.getPassword()
-                )
-            );
 
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            String accessToken = jwtService.generateToken(userDetails.getUsername(), userDetails.getId(), userDetails.getAuthorities());
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(), 
+                loginRequest.getPassword()
+            )
+        );
 
-            TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken.getId().toString());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String accessToken = jwtService.generateToken(userDetails.getUsername(), userDetails.getId(), userDetails.getAuthorities());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-            return ResponseEntity.ok(tokenResponse);
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken.getId().toString());
+
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/refresh")

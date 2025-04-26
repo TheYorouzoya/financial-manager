@@ -3,9 +3,9 @@ package com.ratnesh.financialmanager.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,22 +45,23 @@ public class FamilyController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAuthoriy(@Roles.FAMILY_READ_MEMBER)")
     @GetMapping("/me")
     public ResponseEntity<FamilyDTO> getMyFamily(@AuthenticationPrincipal Jwt jwtToken) {
-        UUID userId = jwtToken.getClaim("userId");
+        UUID userId = UUID.fromString(jwtToken.getClaim("userId"));
         return familyService.getFamilyByUserId(userId)
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @PreAuthorize("hasAuthority(@Roles.ROLE_SITE_ADMIN) or !hasAuthority(@Roles.ROLE_FAMILY_CHILD)")
+    @PreAuthorize("!hasRole(@Roles.FAMILY_CHILD)")
     @PostMapping
-    public ResponseEntity<FamilyDTO> createFamily(@RequestBody FamilyDTO familyDTO) {
-        return ResponseEntity.ok(familyService.createFamily(familyDTO));
+    public ResponseEntity<FamilyDTO> createFamily(@RequestBody FamilyDTO familyDTO, @AuthenticationPrincipal Jwt jwtToken) {
+        UUID userId = UUID.fromString(jwtToken.getClaim("userId"));
+        FamilyDTO newFamily = familyService.createFamilyAsUser(familyDTO, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newFamily);
     }
     
-    @PreAuthorize("hasAuthority(@Roles.ROLE_FAMILY_HEAD)")
+    @PreAuthorize("hasRole(@Roles.FAMILY_HEAD)")
     @PutMapping("/{id}")
     public ResponseEntity<FamilyDTO> updateFamily(@PathVariable UUID id, @RequestBody FamilyDTO familyDTO) {
         return familyService.updateFamily(id, familyDTO)
@@ -68,17 +69,27 @@ public class FamilyController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @PreAuthorize("hasAuthority(@Roles.ROLE_FAMILY_HEAD)")
+    @PreAuthorize("hasRole(@Roles.FAMILY_HEAD)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFamily(@PathVariable UUID id) {
         familyService.deleteFamily(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority(@Roles.FAMILY_ADD_MEMBER)")
-    @PostMapping("/{id}/members")
-    public ResponseEntity<FamilyDTO> addFamilyMember(@PathVariable UUID id, @RequestBody AddMemberRequestDTO request) {
-        return ResponseEntity.ok(familyService.addFamilyMember(id, request.getMemberId()));
-        
+    @PreAuthorize("hasRole(@Roles.FAMILY_HEAD)")
+    @PostMapping("/{familyId}/members")
+    public ResponseEntity<FamilyDTO> addFamilyMember(
+        @PathVariable UUID familyId,
+        @AuthenticationPrincipal Jwt jwtToken,
+        @RequestBody AddMemberRequestDTO request
+    ) {
+
+        return ResponseEntity.ok(
+            familyService.addFamilyMember(
+                familyId, 
+                jwtToken.getClaim("userId"), 
+                request.getMemberId()
+            )
+        ); 
     }
 }

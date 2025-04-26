@@ -11,13 +11,25 @@ import org.springframework.stereotype.Component;
 public final class SecurityConstants {
     
     // --- Role Definitions ---
-    public static final String ROLE_SITE_ADMIN = "SITE_ADMIN";
-    public static final String ROLE_FAMILY_HEAD = "FAMILY_HEAD";
-    public static final String ROLE_FAMILY_ACCOUNTANT = "FAMILY_ACCOUNTANT";
-    public static final String ROLE_FAMILY_MEMBER = "FAMILY_MEMBER";
-    public static final String ROLE_FAMILY_CHILD = "FAMILY_CHILD";
-    public static final String ROLE_USER = "USER";
 
+    // Constants used to refer inside the hasRole() annotations (since Spring
+    // security auto removes the ROLE_ prefix)
+    public static final String SITE_ADMIN = "SITE_ADMIN";
+    public static final String FAMILY_HEAD = "FAMILY_HEAD";
+    public static final String FAMILY_ACCOUNTANT = "FAMILY_ACCOUNTANT";
+    public static final String FAMILY_MEMBER = "FAMILY_MEMBER";
+    public static final String FAMILY_CHILD = "FAMILY_CHILD";
+    public static final String USER = "USER";
+    
+    // The actual role names stored in the database
+    public static final String ROLE_SITE_ADMIN = "ROLE_" + SITE_ADMIN;
+    public static final String ROLE_FAMILY_HEAD = "ROLE_" + FAMILY_HEAD;
+    public static final String ROLE_FAMILY_ACCOUNTANT = "ROLE_" + FAMILY_ACCOUNTANT;
+    public static final String ROLE_FAMILY_MEMBER = "ROLE_" + FAMILY_MEMBER;
+    public static final String ROLE_FAMILY_CHILD = "ROLE_" + FAMILY_CHILD;
+    public static final String ROLE_USER = "ROLE_" + USER;
+
+    public static final String FAMILY_ROLE_PREFIX = "ROLE_FAMILY_";
 
     // --- Privilege Definitions ---
         
@@ -135,11 +147,13 @@ public final class SecurityConstants {
     // API URLs
     public static final String BASE_API_URL = "/api/v1";
     public static final String ACCOUNTS_URL = BASE_API_URL + "/accounts";
+    public static final String ADMIN_URL = BASE_API_URL + "/admin";
     public static final String ALERTS_URL = BASE_API_URL + "/alerts";
     public static final String ASSETS_URL = BASE_API_URL + "/assets";
     public static final String AUTH_URL = BASE_API_URL + "/auth";
     public static final String DOCUMENTS_URL = BASE_API_URL + "/documents";
     public static final String FAMILIES_URL = BASE_API_URL + "/families";
+    public static final String MEMBERS_URL = BASE_API_URL + "/members";
     public static final String PRIVILEGES_URL = BASE_API_URL + "/privileges";
     public static final String ROLES_URL = BASE_API_URL + "/roles";
     public static final String TRANSACTIONS_URL = BASE_API_URL + "/transactions";

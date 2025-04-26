@@ -35,6 +35,15 @@ public class Family {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
     
-    @OneToMany(mappedBy = "family", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "family")
     private Set<User> members;
+
+    @PreRemove
+    private void preRemove() {
+        members.forEach(member -> member.setFamily(null));
+    }
+
+    public void addMember(User member) {
+        this.members.add(member);
+    }
 }

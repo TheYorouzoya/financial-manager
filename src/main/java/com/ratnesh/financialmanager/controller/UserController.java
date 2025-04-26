@@ -8,17 +8,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ratnesh.financialmanager.dto.user.UserDTO;
-import com.ratnesh.financialmanager.dto.user.UserResponseDTO;
 import com.ratnesh.financialmanager.security.constants.SecurityConstants;
 import com.ratnesh.financialmanager.service.UserService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -29,7 +25,7 @@ public class UserController {
     
   private final UserService userService;
     
-    @PreAuthorize("hasAuthority(@Roles.ROLE_SITE_ADMIN)")
+    @PreAuthorize("hasRole(@Roles.SITE_ADMIN)")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -43,13 +39,13 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS) or (#id == principal.id)")
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
-        return userService.updateUser(id, userDTO)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+    // @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS) or (#id == principal.id)")
+    // @PutMapping("/{id}")
+    // public ResponseEntity<UserResponseDTO> updateUser(@PathVariable UUID id, @Valid @RequestBody UserRegistrationDTO userDTO) {
+    //     return userService.updateUser(id, userDTO)
+    //             .map(ResponseEntity::ok)
+    //             .orElseGet(() -> ResponseEntity.notFound().build());
+    // }
     
     @PreAuthorize("hasAuthority(@Roles.MANAGE_ALL_USERS)")
     @DeleteMapping("/{id}")

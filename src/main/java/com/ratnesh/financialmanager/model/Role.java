@@ -3,6 +3,8 @@ package com.ratnesh.financialmanager.model;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Entity;
@@ -32,6 +34,7 @@ public class Role {
 
     private String name;
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
@@ -43,5 +46,9 @@ public class Role {
         inverseJoinColumns = @JoinColumn(
             name = "privilege_id", referencedColumnName = "id"))
     private Set<Privilege> privileges;
+
+    public void addUser(User user) {
+        this.users.add(user);
+    }
     
 }

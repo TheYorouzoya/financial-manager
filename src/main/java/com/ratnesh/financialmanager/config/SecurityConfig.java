@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,7 +73,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers("/actuator/**").hasRole(SecurityConstants.ROLE_SITE_ADMIN)
+                .requestMatchers("/actuator/**").hasRole(SecurityConstants.SITE_ADMIN)
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -88,7 +89,7 @@ public class SecurityConfig {
                 .successHandler(successHandler)
             )
             .formLogin(form -> form.disable())
-            .httpBasic(Customizer.withDefaults())
+            .httpBasic(AbstractHttpConfigurer::disable)
             .userDetailsService(customUserDetailsService);
 
         return http.build();
@@ -129,10 +130,10 @@ public class SecurityConfig {
     @Bean
     static RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.withDefaultRolePrefix()
-            .role(SecurityConstants.ROLE_SITE_ADMIN).implies(SecurityConstants.ROLE_FAMILY_HEAD)
-            .role(SecurityConstants.ROLE_FAMILY_HEAD).implies(SecurityConstants.ROLE_FAMILY_ACCOUNTANT)
-            .role(SecurityConstants.ROLE_FAMILY_ACCOUNTANT).implies(SecurityConstants.ROLE_FAMILY_MEMBER)
-            .role(SecurityConstants.ROLE_FAMILY_MEMBER).implies(SecurityConstants.ROLE_USER)
+            .role(SecurityConstants.SITE_ADMIN).implies(SecurityConstants.FAMILY_HEAD)
+            .role(SecurityConstants.FAMILY_HEAD).implies(SecurityConstants.FAMILY_ACCOUNTANT)
+            .role(SecurityConstants.FAMILY_ACCOUNTANT).implies(SecurityConstants.FAMILY_MEMBER)
+            .role(SecurityConstants.FAMILY_MEMBER).implies(SecurityConstants.USER)
             .build();
     }
 
