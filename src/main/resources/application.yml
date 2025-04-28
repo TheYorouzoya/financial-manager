@@ -6,9 +6,9 @@ spring:
     type: redis
   data:
     redis:
-      host: localhost
-      port: 6379
-      timeout: 60000
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: ${REDIS_TIMEOUT:30000}
 
 
   config:
@@ -45,7 +45,7 @@ spring:
     jwt:
       public-key-location: ${PUBLIC_KEY_PATH}
       private-key-location: ${PRIVATE_KEY_PATH}
-      expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+      expiration-ms: ${JWT_EXPIRATION_MS:900000}
       refresh-token-expiration-ms: ${REFRESH_TOKEN_EXPIRATION_MS:604800000}
 
 
@@ -73,11 +73,3 @@ management:
   endpoint:
     caches:
       access: READ_ONLY
-
-
-server:
-  port: ${SERVER_PORT:8080}
-  servlet:
-    session:
-      cookie:
-        same-site: lax
