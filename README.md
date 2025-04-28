@@ -12,14 +12,11 @@ A Spring Boot-based backend application providing secure authentication (JWT and
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Configuration](#configuration)
-  - [Database Setup & Migrations](#database-setup--migrations)
+  - [Database Setup](#database-setup--migrations)
   - [Running the Application](#running-the-application)
   - [Running Tests](#running-tests)
 - [API Documentation](#api-documentation)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
 - [License](#license)
-- [Contact](#contact)
 
 ## Features
 
@@ -70,9 +67,7 @@ src/
 │   │   ├── security        # Filters, providers, and services
 │   │   └── service         # Business logic services
 │   └── resources/
-│       ├── application.yml # Application properties
-│       └── db/
-│           └── migrations/  # Flyway or Liquibase scripts
+│       └── application.yml # Application properties
 └── test/
     └── java/com/ratnesh/financialmanager  # Unit and integration tests
 ```
@@ -126,7 +121,8 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem
 Place the generated keys in a location of your choice (preferably on the classpath, for example, `/resources/keys/`) and set the following environment variables to point to their location:
 - `PUBLIC_KEY_PATH`
 - `PRIVATE_KEY_PATH`
-If you're putting them on the classpath as shown above, then you can refer to it directly as `classpath:keys/`. Otherwise, you will need to supply the full directory path to the location.
+
+If you're putting them on the classpath as shown above, then you can refer to the path as `classpath:keys/`. Otherwise, you will need to supply the full directory path to the location.
 
 The rest of the environemnt variables have provided default values, so as long as you have the expected defaults on everything, the app should run just fine. Here's the list of variables along with their default values:
 - `REDIS_HOST`: `localhost`. Your default host url for the Redis server.
@@ -135,69 +131,43 @@ The rest of the environemnt variables have provided default values, so as long a
 - `JWT_EXPIRATION_MS`: `900000`. The expiration time (in ms) for a JWT. Default is 15 minutes.
 - `REFRESH_TOKEN_EXPIRATION_MS`: `604800000`. The expiration time (in ms) for refresh tokens. Default is 7 days.
 
-### Database Setup & Migrations
+### Database Setup
 
 By default, the application expects a database by the name of `familyfinance` to exist. So if you want to use the default value, create a postgres database by that name. Otherwise, setup your db and supply the following environment variables:
 - `DATABASE_URL`: `jdbc:postgresql://localhost:5432/familyfinance`. Your postgres database connection url.
 - `DATABASE_USERNAME`: `postgres`
 - `DATABASE_PASSWORD`: `postgres`
 
-This project uses Flyway for database migrations. Migration scripts are located under `src/main/resources/db/migrations`.
-
-To run migrations:
-
-```bash
-mvn flyway:migrate
-```
+This project does not use any migration tool at the moment. The `spring.jpa.hibernate.ddl-auto` variable is set to `update` as the default.
 
 ### Running the Application
 
 ```bash
-mvn spring-boot:run
+./gradlew bootRun
 ```
 
-The API will be available at `http://localhost:8080/api/` by default.
+The API will be available at `http://localhost:8080/api/v1/` by default.
 
 ### Running Tests
 
 Run all unit and integration tests:
 
 ```bash
-mvn test
+./gradlew test
 ```
 
 ## API Documentation
 
-> **TODO:** Integrate Swagger/OpenAPI and link here.
+The app has Swagger UI integration. Once the application is up and running, the API can be accessed at the default Swagger link `http://localhost:8080/swagger-ui/index.html`.
 
 See [docs/API.md](docs/API.md) for full endpoint documentation, request/response schemas, and examples.
-
-## Deployment
-
-> **TODO:** Describe CI/CD pipeline and deployment steps.
 
 ### Docker
 
 > **TODO:** Add Dockerfile and docker-compose instructions.
 
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature/YourFeature`
-3. Commit your changes: `git commit -m "Add some feature"`
-4. Push to the branch: `git push origin feature/YourFeature`
-5. Open a Pull Request.
-
-Please ensure tests pass and code follows the project's Checkstyle rules.
-
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-## Contact
-
-- **Project Maintainer:** Your Name ([your.email@example.com](mailto\:your.email@example.com))
-- **Repository:** [https://github.com/your-org/family-finance-backend](https://github.com/your-org/family-finance-backend)
 
