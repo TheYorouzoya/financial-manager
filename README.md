@@ -47,7 +47,29 @@ A Spring Boot-based backend application providing secure authentication (JWT and
 
 ## Architecture Overview
 
-> **TODO:** Provide a high-level diagram or link to detailed architecture docs.
+```mermaid
+sequenceDiagram
+  participant User
+  participant Frontend
+  participant Backend
+  participant DB
+
+  User->>Frontend: Enters credentials
+  Frontend->>Backend: POST /auth/login
+  Backend->>DB: Validate user + create refresh token
+  Backend-->>Frontend: access token + refresh token
+
+  Frontend->>Backend: Access protected resource
+  Backend->>Backend: Validate JWT
+  Backend-->>Frontend: Return data
+
+  Note over User, Backend: When token expires...
+
+  Frontend->>Backend: POST /auth/refresh
+  Backend->>DB: Check refresh token
+  Backend-->>Frontend: New access token
+
+```
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed design, sequence diagrams, and component interactions.
 
