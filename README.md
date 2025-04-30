@@ -6,7 +6,6 @@ A Spring Boot-based backend application providing secure authentication (JWT and
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Architecture Overview](#architecture-overview)
 - [Folder Structure](#folder-structure)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -16,6 +15,7 @@ A Spring Boot-based backend application providing secure authentication (JWT and
   - [Running the Application](#running-the-application)
   - [Running Tests](#running-tests)
 - [API Documentation](#api-documentation)
+- [Architecture Overview](#architecture-overview)
 - [License](#license)
 
 ## Features
@@ -44,34 +44,6 @@ A Spring Boot-based backend application providing secure authentication (JWT and
 - **Build Tool:** Gradle
 - **Testing:** JUnit, Mockito
 - **Mapping:** MapStruct
-
-## Architecture Overview
-
-```mermaid
-sequenceDiagram
-  participant User
-  participant Frontend
-  participant Backend
-  participant DB
-
-  User->>Frontend: Enters credentials
-  Frontend->>Backend: POST /auth/login
-  Backend->>DB: Validate user + create refresh token
-  Backend-->>Frontend: access token + refresh token
-
-  Frontend->>Backend: Access protected resource
-  Backend->>Backend: Validate JWT
-  Backend-->>Frontend: Return data
-
-  Note over User, Backend: When token expires...
-
-  Frontend->>Backend: POST /auth/refresh
-  Backend->>DB: Check refresh token
-  Backend-->>Frontend: New access token
-
-```
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed design, sequence diagrams, and component interactions.
 
 ## Folder Structure
 
@@ -124,34 +96,36 @@ The `application.yml` file contains the necessary configurations for the applica
 
 #### Environment Variables
 
-To support OAuth login via GitHub, [create a GitHub OAuth app as shown here](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app). Once you've obtained
+- To support OAuth login via GitHub, [create a GitHub OAuth app as shown here](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app). Once you've obtained
 the your GitHub client ID and have generated a client secret, set the following environment
 variables to their appropriate value:
-- `GITHUB_CLIENT_ID`
-- `GITHUB_CLIENT_SECRET`
+  - `GITHUB_CLIENT_ID`
+  - `GITHUB_CLIENT_SECRET`
 
-This application uses a hardcoded asymmetric key-pair to sign and encode JWTs. First, generate an RSA key pair. For example, you can use OpenSSL to generate them for you:
 
-```bash
-# Generate private key (2048-bit RSA)
-openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+- This application uses a hardcoded asymmetric key-pair to sign and encode JWTs. First, generate an RSA key pair. For example, you can use OpenSSL to generate them for you:
+  ```bash
+  # Generate private key (2048-bit RSA)
+  openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
 
-# Extract the public key from the private key
-openssl rsa -pubout -in private_key.pem -out public_key.pem
-```
+  # Extract the public key from the private key
+  openssl rsa -pubout -in private_key.pem -out public_key.pem
+  ```
+  Place the generated keys in a location of your choice (preferably on the classpath, for example, `/resources/keys/`) and set the following environment variables to point to their location:
+  - `PUBLIC_KEY_PATH`
+  - `PRIVATE_KEY_PATH`
 
-Place the generated keys in a location of your choice (preferably on the classpath, for example, `/resources/keys/`) and set the following environment variables to point to their location:
-- `PUBLIC_KEY_PATH`
-- `PRIVATE_KEY_PATH`
+  If you're putting them on the classpath as shown above, then you can refer to the path as `classpath:keys/`. Otherwise, you will need to supply the full directory path to the location.
 
-If you're putting them on the classpath as shown above, then you can refer to the path as `classpath:keys/`. Otherwise, you will need to supply the full directory path to the location.
+- The expiration time for the access token (the JWT) and the refresh token can be configured by setting the following variables:
 
-The rest of the environemnt variables have provided default values, so as long as you have the expected defaults on everything, the app should run just fine. Here's the list of variables along with their default values:
-- `REDIS_HOST`: `localhost`. Your default host url for the Redis server.
-- `REDIS_PORT`: `6379`. The post the Redis server accepts connections on.
-- `REDIS_TIMEOUT`: `30000`. The connection timeout value (in ms) for the Redis server.
-- `JWT_EXPIRATION_MS`: `900000`. The expiration time (in ms) for a JWT. Default is 15 minutes.
-- `REFRESH_TOKEN_EXPIRATION_MS`: `604800000`. The expiration time (in ms) for refresh tokens. Default is 7 days.
+  - `JWT_EXPIRATION_MS`: `900000`. The expiration time (in ms) for a JWT. Default is 15 minutes.
+  - `REFRESH_TOKEN_EXPIRATION_MS`: `604800000`. The expiration time (in ms) for refresh tokens. Default is 7 days.
+
+- This application uses Redis to cache frequently accessed resources and to blacklist JWTs upon logout. The following variables can be configured to setup the connection:
+  - `REDIS_HOST`: `localhost`. Your default host url for the Redis server.
+  - `REDIS_PORT`: `6379`. The post the Redis server accepts connections on.
+  - `REDIS_TIMEOUT`: `30000`. The connection timeout value (in ms) for the Redis server.
 
 ### Database Setup
 
@@ -160,7 +134,7 @@ By default, the application expects a database by the name of `familyfinance` to
 - `DATABASE_USERNAME`: `postgres`
 - `DATABASE_PASSWORD`: `postgres`
 
-This project does not use any migration tool at the moment. The `spring.jpa.hibernate.ddl-auto` variable is set to `update` as the default.
+This project does not use a migration tool at the moment. The `spring.jpa.hibernate.ddl-auto` variable is set to `update` as the default.
 
 ### Running the Application
 
@@ -184,9 +158,14 @@ The app has Swagger UI integration. Once the application is up and running, the 
 
 See [docs/API.md](docs/API.md) for full endpoint documentation, request/response schemas, and examples.
 
-### Docker
+## Architecture Overview
 
-> **TODO:** Add Dockerfile and docker-compose instructions.
+The app follows a layered monolithic architecture with the standard division into Filters, Controllers, Services, and Repositories with objects modeled as Entities and DTOs.
+
+![Image showing the app architecture](./docs/image.png)
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed design, sequence diagrams, and component interactions.
+
 
 ## License
 
