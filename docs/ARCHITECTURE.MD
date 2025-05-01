@@ -58,6 +58,10 @@ Since the app uses a Role-Based Access Control system, route controllers are ann
 Since JWTs are stateless, logging a user out presents its own challenges. If the server isn't keeping track of which user is logged in, how do we log them out? While shortlived JWTs solve most of this problem, upon receiving a logout request, the server adds the user's current `accessToken` to a blacklist. This blacklist exists purely at the cache level and is managed as a `RedisTemplate` with individual time-to-live for each token on the list. All requests to authenticated routes pass through a blacklist filter where the incoming bearer token is quickly checked if it is blacklisted. If it is, the server rejects the request.
 
 
+### Security Context
+
+Since we're using JWTs with our custom claims, we need to implement our own `UserDetails` object and `UserDetailsService` to make sure that those fields can be accessed inside our Authentication Pricipal object anywhere else in the app. Since the app allows both credentials login and OAuth2 login, we have defined custom objects and services for each of them.
+
 ## Controller Layer
 
 Once authenticated, requests are forwarded to the appropriate controllers. First, the authorization annotations (e.g., `@PreAuthorize`, `@hasRole`, and `@hasAuthority`) take care of checking the required permissions in the incoming JWT. Then, the request arguments are validated against any respective DTO or Path Variable definitions as per the `@Valid` and `@Validated` annotations. Finally, the controller calls the appropriate service layer method and passes the request arguments to it. The return value is then packaged up in a `ResponseEntity` and sent back to the client.
@@ -66,6 +70,9 @@ Once authenticated, requests are forwarded to the appropriate controllers. First
 
 Service layer handles core bussiness logic for the application. This is also where most of the fine-grainded vetting and validation checks are performed. The layer interfaces with the repository layer (or the data access layer) to get the required data. Finally, as needed, the fetched entity is mapped onto the appropriate Data Transfer Object using the Mapstruct mappers and returned to the controller layer.
 
+### Mapstruct DTO Mappers
+
+In order to reduce the amount of boilerplate code, the app uses Mapstruct in combination with Lombok to strip down the DTOs into simple @Data classes. The DTOs can be found inside the [DTO Package](../src/main/java/com/ratnesh/financialmanager/dto/) while the mappers are part of the [Mapper Package](../src/main/java/com/ratnesh/financialmanager/mapper/).
 
 ## Repository Layer
 
@@ -96,3 +103,22 @@ flowchart TD
   C --> |ResponseEntity| A
 
 ```
+
+## Entity
+
+The following entity relationship diagram illustrates the relationships between the app's entities.
+
+```mermaid
+erDiagram
+  USER ||--o{ ROLE            : has
+  USER ||--o{ REFRESH_TOKEN   : owns
+  USER }o--|| FAMILY          : belongs_to
+  USER ||--o{ ACCOUNT         : owns
+  ROLE ||--o{ PRIVILEGES      : has
+  ACCOUNT ||--o{ TRANSACTION  : has
+  TRANSACTION }o--|| CATEGORY : categorized_as
+  USER ||--o{ ASSET           : linked_to
+  USER ||--o{ DOCUMENT        : uploads
+```
+
+In this family-based financial management system, the user is our central entity. When we fetch a family's assets, the application would fetch all the assets for each one of the users in the family and pull them together. The resulting data also depends on the permission level assigned to the user. For example, a `FAMILY_CHILD` might not get access to all the asset data depending on how the permissions are configured.

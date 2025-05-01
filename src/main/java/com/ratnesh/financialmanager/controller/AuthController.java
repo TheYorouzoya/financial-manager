@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +46,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         if (loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -69,8 +68,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
-        RefreshToken refreshToken = refreshTokenService.getTokenById(request.id());
+    public ResponseEntity<TokenResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        UUID tokenId;
+        try {
+            tokenId = UUID.fromString(request.getId());
+        } catch (IllegalArgumentException ex) {
+            throw new RefreshTokenException("id is required");
+        }
+        RefreshToken refreshToken = refreshTokenService.getTokenById(tokenId);
         if (refreshToken == null) {
             throw new RefreshTokenException("Refresh Token not found");
         }
@@ -96,8 +101,9 @@ public class AuthController {
             blacklistService.blacklistToken(jti, remainingTTL);
         }
 
-        String userId = jwt.getClaim("id");
-        refreshTokenService.deleteAllUserRefreshTokens(UUID.fromString(userId));
+        String userIdString = jwt.getClaim("userId");
+        UUID userId = UUID.fromString(userIdString);
+        refreshTokenService.deleteAllUserRefreshTokens(userId);
 
         return ResponseEntity.noContent().build();
     }

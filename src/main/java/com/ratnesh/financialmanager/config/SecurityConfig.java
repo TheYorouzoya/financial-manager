@@ -160,7 +160,7 @@ public class SecurityConfig {
             response.setContentType("application/json");
 
             String jsonPayload = String.format("{\"error\": \"%s\", \"message\": \"%s\"}",
-                      "Authentication Failed", authException.getMessage());
+                      "Unauthorized", authException.getMessage());
             
             response.getWriter().write(jsonPayload);
         };

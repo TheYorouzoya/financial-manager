@@ -1,5 +1,10 @@
 package com.ratnesh.financialmanager.dto;
 
-import java.util.UUID;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-public record TokenRefreshRequest (UUID id) {}
+@Data
+public class TokenRefreshRequest {
+    @NotBlank(message = "Refresh Token ID is required")
+    String id;
+}

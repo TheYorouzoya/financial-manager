@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RefreshTokenException.class)
     public ResponseEntity<Map<String, Object>> handleRefreshTokenException(RefreshTokenException ex) {
         Map<String, Object> response = generateGenericErrorResponse(
-            "Authorization Failed",
+            "Unauthorized",
             ex.getMessage()
         );
         
@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRoleRequestException.class)
     public ResponseEntity<Object> handleBadRoleRequest(BadRoleRequestException ex) {
         Map<String, Object> response = generateGenericErrorResponse(
-            "Bad role update request", 
+            "Bad Request", 
             ex.getMessage()
         );
 

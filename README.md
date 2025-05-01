@@ -164,11 +164,11 @@ The app follows a layered monolithic architecture with the standard division int
 
 ![Image showing the app architecture](./docs/image.png)
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed design, sequence diagrams, and component interactions.
+See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.MD) for detailed design, sequence diagrams, and component interactions.
 
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License.
 
 
