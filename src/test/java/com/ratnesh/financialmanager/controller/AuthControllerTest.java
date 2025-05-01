@@ -145,7 +145,7 @@ public class AuthControllerTest {
         jwt = Jwt.withTokenValue("dummyJwt")
                     .header("alg", "HS256")
                     .claim("sub", username)
-                    .claim("id", userId.toString())
+                    .claim("userId", userId.toString())
                     .claim("roles", List.of("ROLE_USER"))
                     .expiresAt(Instant.now().plus(Duration.ofHours(1)))
                     .issuedAt(Instant.now())
